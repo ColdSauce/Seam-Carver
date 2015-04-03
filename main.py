@@ -4,14 +4,13 @@ import time
 
 
 
-y_sobel_operator = [[-1,-2,-1],
-					[ 0, 0, 0],
-					[ 1, 2, 1]]
+x_sobel_operator = [[-3,0,3],
+                    [-10,0,10],
+                    [-3,0,3]]
 
-
-x_sobel_operator = [[-1, 0, 1],
-					[-2, 0, 2],
-					[-1, 0, 1]]
+y_sobel_operator = [[-3,-10,-3],
+                    [0,0,0],
+                    [3,10,3]]
 
 class Carver(object):
 	def __init__(self,imgPath):
@@ -22,15 +21,16 @@ class Carver(object):
 
 		pixels = list(im.getdata())
 		pixels = [pixels[i * width:(i + 1) * width] for i in xrange(height)]
-		objPixels = [[None] * len(pixels[0])] * len(pixels)
-		for i in xrange(len(pixels)):
-			for j in xrange(len(pixels[0])):
-				r,g,b = pixels[i][j]
-				objPixels[i][j] = self.Pixel(r,g,b)
+		# objPixels = [[None] * len(pixels[0])] * len(pixels)
+		# for i in xrange(len(pixels)):
+		# 	for j in xrange(len(pixels[0])):
+		# 		r,g,b = pixels[i][j]
+		# 		objPixels[i][j] = self.Pixel(r,g,b)
 
 
-		img_object = self.Image_Object(objPixels,self.writablePixels)
+		img_object = self.Image_Object(pixels,self.writablePixels)
 		im.save("somepath.png")
+		im.show()
 
 
 
@@ -44,17 +44,15 @@ class Carver(object):
 		def set_energy(self,energy):
 			self.energy = energy
 
-		def get_grayscale_pixel(self):
-			luminance =  (0.2126*self.r + 0.7152*self.g + 0.0722*self.b)
-			r,g,b = (luminance,) * 3
-			grayscale = self.__class__(r,g,b)
-			return grayscale
 		def get_pixel_as_tuple(self):
 			return (self.r,self.g,self.b)
 
 
 	class Image_Object(object):
 
+		def get_grayscale_pixel(self,r,g,b):
+			luminance =  (0.2126*r + 0.7152*g + 0.0722*b)
+			return (luminance,) * 3
 		def __init__(self, arrPixel,writablePixels):
 			self.writablePixels = writablePixels
 			self.arrPixel = arrPixel
@@ -77,12 +75,20 @@ class Carver(object):
 					self.energy[i][j] = self.get_energy(j,i)
 
 		def get_energy(self,x,y):
-			x_prime = self.der(x,y,x_sobel_operator)
-			y_prime = self.der(x,y,y_sobel_operator)		
+			x_prime = self.der(x,y,x_sobel_operator) ** 2
+			y_prime = self.der(x,y,y_sobel_operator) ** 2
 
-			self.writablePixels[x,y] = (int((x_prime + y_prime)),) * 3
+			result = int(math.sqrt(x_prime + y_prime))
+			if result > 255:
+				result = 255
+			if result < 0:
+				result = 0
+
+			self.writablePixels[x,y] = (result,) * 3
 
 			return x_prime + y_prime
+
+			return 0
 
 
 		def der(self,x,y,sobel_filter):
@@ -90,12 +96,13 @@ class Carver(object):
 			rgbTuple = [0,0,0]
 			for i in xrange(-1,2):
 				for j in xrange(-1,2):
-					height,width = (len(self.arrPixel),len(self.arrPixel[0]))
+					width,height = (len(self.arrPixel),len(self.arrPixel[0]))
 					if x + i < 0 or y + j < 0 or y + j >= height or x + i >= width:
 						return 0
 					filterMultiple = sobel_filter[j+i][i+1]
 					currentPixel = self.arrPixel[y + j][x+ i]	
-					filteredSum += currentPixel.get_grayscale_pixel().r * filterMultiple
+					r,g,b = currentPixel
+					filteredSum += self.get_grayscale_pixel(r,g,b)[0] * filterMultiple
 
 			return filteredSum/9
 
