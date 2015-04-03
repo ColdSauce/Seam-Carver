@@ -79,7 +79,6 @@ class Carver(object):
 		def get_energy(self,x,y):
 			x_prime = self.der(x,y,x_sobel_operator)
 			y_prime = self.der(x,y,y_sobel_operator)		
-			print str(x) + " , " + str(y) + str(x_prime + y_prime)
 
 			self.writablePixels[x,y] = (int((x_prime + y_prime)),) * 3
 
