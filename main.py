@@ -95,12 +95,10 @@ class Carver(object):
 					if x + i < 0 or y + j < 0 or y + j >= height or x + i >= width:
 						return 0
 					filterMultiple = sobel_filter[j+i][i+1]
-					for item in xrange(0,3):
-						rgbTuple[item] += self.arrPixel[y + j][x + i].get_pixel_as_tuple()[item]
 					currentPixel = self.arrPixel[y + j][x+ i]	
 					filteredSum += currentPixel.get_grayscale_pixel().r * filterMultiple
 
-			return filteredSum
+			return filteredSum/9
 
 def main():
 	carver  = Carver("valve.png")
