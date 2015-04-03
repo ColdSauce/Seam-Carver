@@ -95,7 +95,6 @@ class Carver(object):
 						rgbTuple[item] += self.arrPixel[y + j][x + i].get_pixel_as_tuple()[item]
 					currentPixel = self.arrPixel[y + j][x+ i]
 					filteredSum += currentPixel.get_grayscale_pixel().r * filterMultiple
-					print "wrote pixels on" +str(x) + "" + str(y)
 					self.writablePixels[x,y] = (int(filteredSum),) * 3;
 			return filteredSum
 
