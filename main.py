@@ -22,10 +22,15 @@ class Carver(object):
 
 		pixels = list(im.getdata())
 		pixels = [pixels[i * width:(i + 1) * width] for i in xrange(height)]
+		objPixels = [[None] * len(pixels[0])] * len(pixels)
+		for i in xrange(len(pixels)):
+			for j in xrange(len(pixels[0])):
+				r,g,b = pixels[i][j]
+				objPixels[i][j] = self.Pixel(r,g,b)
 
 
-		img_object = self.Image_Object(pixels)
-
+		img_object = self.Image_Object(objPixels,self.writablePixels)
+		im.save("somepath.png")
 
 
 
@@ -41,15 +46,20 @@ class Carver(object):
 
 		def get_grayscale_pixel(self):
 			luminance =  (0.2126*self.r + 0.7152*self.g + 0.0722*self.b)
-			grayscale = Pixel((luminance,) * 3)
+			r,g,b = (luminance,) * 3
+			grayscale = self.__class__(r,g,b)
 			return grayscale
+		def get_pixel_as_tuple(self):
+			return (self.r,self.g,self.b)
 
 
 	class Image_Object(object):
 
-		def __init__(self, arrPixel):
+		def __init__(self, arrPixel,writablePixels):
+			self.writablePixels = writablePixels
 			self.arrPixel = arrPixel
 			self.set_energies()
+
 
 		# This functions sets the energies for each pixel
 		# The higher the energy, the less likely this pixel is going
@@ -82,10 +92,11 @@ class Carver(object):
 						return 0
 					filterMultiple = sobel_filter[j+i][i+1]
 					for item in xrange(0,3):
-						rgbTuple[item] += self.arrPixel[y + j][x + i][item]
+						rgbTuple[item] += self.arrPixel[y + j][x + i].get_pixel_as_tuple()[item]
 					currentPixel = self.arrPixel[y + j][x+ i]
-					filteredSum += currentPixel.get_grayscale_pixel.r * filterMultiple
-					self.writablePixels[y+j][x + i] = (filteredSum,) * 3;
+					filteredSum += currentPixel.get_grayscale_pixel().r * filterMultiple
+					print "wrote pixels on" +str(x) + "" + str(y)
+					self.writablePixels[x,y] = (int(filteredSum),) * 3;
 			return filteredSum
 
 def main():
