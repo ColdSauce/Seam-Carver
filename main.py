@@ -78,10 +78,14 @@ class Carver(object):
 
 		def get_energy(self,x,y):
 			x_prime = self.der(x,y,x_sobel_operator)
-			y_prime = self.der(x,y,y_sobel_operator)
+			y_prime = self.der(x,y,y_sobel_operator)		
+			print str(x) + " , " + str(y) + str(x_prime + y_prime)
+
+			self.writablePixels[x,y] = (int((x_prime + y_prime)),) * 3
+
 			return x_prime + y_prime
 
-				
+
 		def der(self,x,y,sobel_filter):
 			filteredSum = 0
 			rgbTuple = [0,0,0]
@@ -93,10 +97,8 @@ class Carver(object):
 					filterMultiple = sobel_filter[j+i][i+1]
 					for item in xrange(0,3):
 						rgbTuple[item] += self.arrPixel[y + j][x + i].get_pixel_as_tuple()[item]
-					currentPixel = self.arrPixel[y + j][x+ i]
+					currentPixel = self.arrPixel[y + j][x+ i]	
 					filteredSum += currentPixel.get_grayscale_pixel().r * filterMultiple
-					print "wrote pixels on" +str(x) + "" + str(y)
-					self.writablePixels[x,y] = (int(filteredSum),) * 3;
 			return filteredSum
 
 def main():
