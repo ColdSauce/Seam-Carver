@@ -1,7 +1,7 @@
 from PIL import Image
 import math
 import time
-
+import pprint
 
 
 x_sobel_operator = [[-3,0,3],
@@ -53,17 +53,48 @@ class Carver(object):
 		def get_grayscale_pixel(self,r,g,b):
 			luminance =  (0.2126*r + 0.7152*g + 0.0722*b)
 			return (luminance,) * 3
-		def __init__(self, arrPixel,writablePixels):
+		def __init__(self, arrPixel, writablePixels):
 			self.writablePixels = writablePixels
 			self.arrPixel = arrPixel
 			self.set_energies()
+
+			self.build_costs()
+			# print self.costs
+			minimum_index = self.find_lowest_cost_index()
+			for x in xrange(20):
+				self.draw_path(x,len(self.costs[0]) - 1)
+
+		def draw_path(self,x,y):
+			top_right = 999999
+			top_left =  999999
+			top =       999999
+			if y == 0:
+				return
+			
+			self.writablePixels[x,y] = (255,0,0)
+			if x != len(self.costs) - 1:
+				top_right = self.costs[x + 1][y - 1]
+			if x != 0:
+				top_left = self.costs[x - 1][y - 1]
+			top = self.costs[x][y - 1]
+
+			values = [top,top_right,top_left]
+
+			min_index = values.index(min(values))
+			if min_index == 0:
+				self.draw_path(x,y-1)
+			elif min_index == 1:
+				self.draw_path(x + 1, y - 1)
+			elif min_index == 2:
+				self.draw_path(x - 1, y - 1)
 
 
 		# This functions sets the energies for each pixel
 		# The higher the energy, the less likely this pixel is going
 		# to be carved as it is important for the picture.
 		def set_energies(self):
-			self.energy = [[0]*len(self.arrPixel[0])] * len(self.arrPixel)
+			self.energy = [[8]*len(self.arrPixel[0])] * len(self.arrPixel)
+			# print self.energy
 			#From i = 0 .. i = height of image
 				#From j = 0 .. j = width of image
 					# Get a pixel, p, from image, img, by p = img[i,j]	
@@ -72,7 +103,59 @@ class Carver(object):
 					# Set the sum of the two derivatives as energy of the pixel [i,j] 
 			for i in xrange(len(self.arrPixel)):
 				for j in xrange(len(self.arrPixel[i])):
+					# print "i: " + str(i)
+					# print "j: " + str(j)
 					self.energy[i][j] = self.get_energy(j,i)
+
+			self.energy = [[self.get_energy(j,i) for j in xrange(len(self.arrPixel[0]))] for i in xrange(len(self.arrPixel))]
+			
+
+		def find_lowest_cost_index(self):
+			bottom_costs = list()
+			y = len(self.costs[0]) - 1
+			for x in xrange(len(self.costs)):
+				bottom_costs.append(self.costs[x][y])
+			return bottom_costs.index(min(bottom_costs))
+
+
+		def build_costs(self):
+			self.costs= [[6]*len(self.arrPixel[0])] * len(self.arrPixel)
+			# print self.costs
+			for x in xrange(len(self.energy)):
+				for y in xrange(len(self.energy[x]) - 1):
+					if y == 0:
+						self.costs[x][y] = self.energy[x][y]
+						#print str(self.costs[x][y])
+
+					# All the way to the right
+					if x != len(self.energy) -1 :
+						if self.costs[x + 1][y + 1] == 0:
+							self.costs[x + 1][y + 1] = self.costs[x][y] + self.energy[x + 1][y + 1]
+						else:
+							if self.costs[x + 1][y + 1] > self.costs[x][y] + self.energy[x + 1][y + 1]:
+								self.costs[x + 1][y + 1] = self.costs[x][y] + self.energy[x + 1][y + 1]
+					if x == 0:
+						if self.costs[x - 1][y + 1] == 0:
+							self.costs[x - 1][y + 1] = self.costs[x][y] + self.energy[x - 1][y + 1]
+						else:
+							if self.costs[x - 1][y + 1] > self.costs[x][y] + self.energy[x - 1][y + 1]:
+								self.costs[x - 1][y + 1] = self.costs[x][y] + self.energy[x - 1][y + 1]
+					if self.costs[x][y + 1] == 0:
+						self.costs[x][y + 1] = self.costs[x][y] + self.energy[x][y + 1]
+					else:
+						if self.costs[x][y + 1] > self.costs[x][y] + self.energy[x][y + 1]:
+							self.costs[x][y + 1] = self.costs[x][y] + self.energy[x][y + 1]
+
+				print self.costs
+
+
+
+
+
+		def is_on_edge(x,y):
+			return x == len(self.energy) or y == len(self.energy[0]) or x == 0
+
+
 
 		def get_energy(self,x,y):
 			x_prime = self.der(x,y,x_sobel_operator) ** 2
@@ -84,11 +167,8 @@ class Carver(object):
 			if result < 0:
 				result = 0
 
-			self.writablePixels[x,y] = (result,) * 3
-
-			return x_prime + y_prime
-
-			return 0
+			# self.writablePixels[x,y] = (result,) * 3
+			return result
 
 
 		def der(self,x,y,sobel_filter):
@@ -107,7 +187,7 @@ class Carver(object):
 			return filteredSum/9
 
 def main():
-	carver  = Carver("sdf.png")
+	carver  = Carver("valve.png")
 
 
 
