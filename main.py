@@ -81,8 +81,8 @@ class Carver(object):
 			
 			self.writablePixels[y,x] = (255,0,0)
 			# print str((x,y))
-			if x != len(self.costs[0]) - 1:
-				top_right = self.costs[x - 1][y + 1]
+			if x != len(self.costs) - 1:
+				top_right = self.costs[x + 1][y - 1]
 			if x != 0:
 				top_left = self.costs[x - 1][y - 1]
 			top = self.costs[x][y - 1]
