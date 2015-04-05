@@ -2,6 +2,7 @@ from PIL import Image
 import math
 import time
 import pprint
+import sys
 
 
 
@@ -208,7 +209,8 @@ class Carver(object):
 			return filteredSum/9
 
 def main():
-	carver  = Carver("nuke.jpg")
+	sys.setrecursionlimit(10000)
+	carver  = Carver("valve.jpg")
 
 
 
