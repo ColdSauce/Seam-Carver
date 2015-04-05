@@ -29,7 +29,7 @@ class Carver(object):
 		# 		objPixels[i][j] = self.Pixel(r,g,b)
 
 
-		img_object = self.Image_Object(pixels,self.writablePixels)
+		img_object = self.Image_Object(pixels,self.writablePixels,im)
 		im.save("somepath.png")
 		im.show()
 
@@ -54,7 +54,8 @@ class Carver(object):
 		def get_grayscale_pixel(self,r,g,b):
 			luminance =  (0.2126*r + 0.7152*g + 0.0722*b)
 			return (luminance,) * 3
-		def __init__(self, arrPixel, writablePixels):
+		def __init__(self, arrPixel, writablePixels,im):
+			self.image = im
 			self.writablePixels = writablePixels
 			self.arrPixel = arrPixel
 			self.set_energies()
@@ -80,7 +81,6 @@ class Carver(object):
 				return
 			
 			self.writablePixels[y,x] = (255,0,0)
-			self.im.save("somepath.png")
 			# print str((x,y))
 			if x != len(self.costs) - 1:
 				top_right = self.costs[x + 1][y - 1]
@@ -208,7 +208,7 @@ class Carver(object):
 			return filteredSum/9
 
 def main():
-	carver  = Carver("valve.jpg")
+	carver  = Carver("nuke.jpg")
 
 
 
