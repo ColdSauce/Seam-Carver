@@ -72,7 +72,7 @@ class Carver(object):
 			for x in xrange(len(self.costs)):
 				self.draw_path(x,len(self.costs[0]) - 1)
 
-		def draw_path(self,y,x):
+		def draw_path(self,x,y):
 
 			#
 			top_right = 999999
@@ -117,6 +117,7 @@ class Carver(object):
 					# print "i: " + str(i)
 					# print "j: " + str(j)
 					self.energy[i][j] = self.get_energy(j,i)
+					self.writablePixels[i,j] = (self.energy[i][j],) * 3
 
 			self.energy = [[self.get_energy(j,i) for j in xrange(len(self.arrPixel[0]))] for i in xrange(len(self.arrPixel))]
 			
