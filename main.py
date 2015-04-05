@@ -73,20 +73,19 @@ class Carver(object):
 				self.draw_path(x,len(self.costs[0]) - 1)
 
 		def draw_path(self,x,y):
-
 			top_right = 999999999999999999999999999999999999
 			top_left =  999999999999999999999999999999999999
 			top =       999999999999999999999999999999999999
 			if y == 0:
 				return
 			
-			self.writablePixels[y,x] = (255,0,0)
+			self.writablePixels[x,y] = (255,0,0)
 			# print str((x,y))
 			if x != len(self.costs) - 1:
-				top_right = self.costs[x + 1][y - 1]
+				top_right = self.costs[y - 1][x + 1]
 			if x != 0:
-				top_left = self.costs[x - 1][y - 1]
-			top = self.costs[x][y - 1]
+				top_left = self.costs[y - 1][x - 1]
+			top = self.costs[y][x - 1]
 
 			values = [top,top_right,top_left]
 
@@ -103,7 +102,6 @@ class Carver(object):
 		# The higher the energy, the less likely this pixel is going
 		# to be carved as it is important for the picture.
 		def set_energies(self):
-			self.energy = [[8]*len(self.arrPixel[0])] * len(self.arrPixel)
 			# print self.energy
 			#From i = 0 .. i = height of image
 				#From j = 0 .. j = width of image
@@ -111,15 +109,7 @@ class Carver(object):
 					# Get the x derivative of p
 					# Get the y derivative of p
 					# Set the sum of the two derivatives as energy of the pixel [i,j] 
-			for i in xrange(len(self.arrPixel)):
-				for j in xrange(len(self.arrPixel[i])):
-					# print "i: " + str(i)
-					# print "j: " + str(j)
-					self.energy[i][j] = self.get_energy(j,i)
-					self.writablePixels[j,i] = (self.energy[i][j],) * 3
-
 			self.energy = [[self.get_energy(j,i) for j in xrange(len(self.arrPixel[0]))] for i in xrange(len(self.arrPixel))]
-			
 
 		def find_lowest_cost_index(self):
 			bottom_costs = list()
@@ -134,7 +124,7 @@ class Carver(object):
 			self.someCosts = self.costs;
 			# print self.costs 
 			for y in xrange(0,len(self.energy[0]) - 1):
-				for x in xrange(len(self.energy)):
+				for x in xrange(0,len(self.energy)):
 					if y == 0:
 						self.costs[x][y] = self.energy[x][y]
 						#print str(self.costs[x][y])
