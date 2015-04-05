@@ -4,6 +4,7 @@ import time
 import pprint
 
 
+
 x_sobel_operator = [[-3,0,3],
                     [-10,0,10],
                     [-3,0,3]]
@@ -57,21 +58,29 @@ class Carver(object):
 			self.writablePixels = writablePixels
 			self.arrPixel = arrPixel
 			self.set_energies()
+			# self.energy = [[4,5,6],
+			# 			   [3,3,1],
+			# 			   [1,2,2]]
+			#431 843 10,4,5
+
 
 			self.build_costs()
 			# print self.costs
 			minimum_index = self.find_lowest_cost_index()
-			for x in xrange(20):
+			for x in xrange(len(self.costs)):
 				self.draw_path(x,len(self.costs[0]) - 1)
 
 		def draw_path(self,x,y):
+
+			#
 			top_right = 999999
 			top_left =  999999
 			top =       999999
 			if y == 0:
 				return
 			
-			self.writablePixels[x,y] = (255,0,0)
+			self.writablePixels[y,x] = (255,0,0)
+			# print str((x,y))
 			if x != len(self.costs) - 1:
 				top_right = self.costs[x + 1][y - 1]
 			if x != 0:
@@ -119,10 +128,11 @@ class Carver(object):
 
 
 		def build_costs(self):
-			self.costs= [[6]*len(self.arrPixel[0])] * len(self.arrPixel)
-			# print self.costs
-			for x in xrange(len(self.energy)):
-				for y in xrange(len(self.energy[x]) - 1):
+			self.costs= [[0 for x in xrange(len(self.energy[0]))] for y in xrange(len(self.energy))]
+			self.someCosts = self.costs;
+			# print self.costs 
+			for y in xrange(0,len(self.energy[0]) - 1):
+				for x in xrange(len(self.energy)):
 					if y == 0:
 						self.costs[x][y] = self.energy[x][y]
 						#print str(self.costs[x][y])
@@ -134,7 +144,7 @@ class Carver(object):
 						else:
 							if self.costs[x + 1][y + 1] > self.costs[x][y] + self.energy[x + 1][y + 1]:
 								self.costs[x + 1][y + 1] = self.costs[x][y] + self.energy[x + 1][y + 1]
-					if x == 0:
+					if x != 0:
 						if self.costs[x - 1][y + 1] == 0:
 							self.costs[x - 1][y + 1] = self.costs[x][y] + self.energy[x - 1][y + 1]
 						else:
@@ -145,8 +155,18 @@ class Carver(object):
 					else:
 						if self.costs[x][y + 1] > self.costs[x][y] + self.energy[x][y + 1]:
 							self.costs[x][y + 1] = self.costs[x][y] + self.energy[x][y + 1]
+					# if self.costs[8][107] == 0:
+					# 	# print str((x,y))
+					# 	pass
+					# print self.costs[8][107]
 
-				print self.costs
+
+				# if x == len(self.energy) - 1:
+				# 	print self.costs[8][107]
+				# 	self.someCosts = self.costs
+
+
+
 
 
 
@@ -187,10 +207,19 @@ class Carver(object):
 			return filteredSum/9
 
 def main():
-	carver  = Carver("valve.png")
+	carver  = Carver("valve.jpg")
 
 
 
 
 if __name__ == '__main__':
 	main()
+
+
+
+
+
+
+
+
+
