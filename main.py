@@ -80,6 +80,7 @@ class Carver(object):
 				return
 			
 			self.writablePixels[y,x] = (255,0,0)
+			self.im.save("somepath.png")
 			# print str((x,y))
 			if x != len(self.costs) - 1:
 				top_right = self.costs[x + 1][y - 1]
