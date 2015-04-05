@@ -74,14 +74,13 @@ class Carver(object):
 
 		def draw_path(self,x,y):
 
-			#
 			top_right = 999999
 			top_left =  999999
 			top =       999999
 			if y == 0:
 				return
 			
-			self.writablePixels[x,y] = (255,0,0)
+			self.writablePixels[y,x] = (255,0,0)
 			# print str((x,y))
 			if x != len(self.costs) - 1:
 				top_right = self.costs[x + 1][y - 1]
@@ -117,7 +116,7 @@ class Carver(object):
 					# print "i: " + str(i)
 					# print "j: " + str(j)
 					self.energy[i][j] = self.get_energy(j,i)
-					self.writablePixels[i,j] = (self.energy[i][j],) * 3
+					self.writablePixels[j,i] = (self.energy[i][j],) * 3
 
 			self.energy = [[self.get_energy(j,i) for j in xrange(len(self.arrPixel[0]))] for i in xrange(len(self.arrPixel))]
 			
