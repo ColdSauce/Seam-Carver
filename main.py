@@ -79,9 +79,9 @@ class Carver(object):
 			if y == 0:
 				return
 			
-			self.writablePixels[x,y] = (255,0,0)
+			self.writablePixels[y,x] = (255,0,0)
 			# print str((x,y))
-			if x != len(self.costs) - 1:
+			if x != len(self.costs[0]) - 1:
 				top_right = self.costs[y - 1][x + 1]
 			if x != 0:
 				top_left = self.costs[y - 1][x - 1]
