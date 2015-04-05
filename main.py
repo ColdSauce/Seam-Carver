@@ -200,7 +200,7 @@ class Carver(object):
 
 def main():
 	sys.setrecursionlimit(10000)
-	carver  = Carver("valve.jpg")
+	carver  = Carver("c2.jpg")
 
 
 
