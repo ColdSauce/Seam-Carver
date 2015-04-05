@@ -74,9 +74,9 @@ class Carver(object):
 
 		def draw_path(self,x,y):
 
-			top_right = 999999
-			top_left =  999999
-			top =       999999
+			top_right = 999999999999999999999999999999999999
+			top_left =  999999999999999999999999999999999999
+			top =       999999999999999999999999999999999999
 			if y == 0:
 				return
 			
