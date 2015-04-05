@@ -71,7 +71,7 @@ class Carver(object):
 			for x in xrange(len(self.costs)):
 				self.draw_path(x,len(self.costs[0]) - 1)
 
-		def draw_path(self,x,y):
+		def draw_path(self,y,x):
 
 			#
 			top_right = 999999
@@ -80,7 +80,7 @@ class Carver(object):
 			if y == 0:
 				return
 			
-			self.writablePixels[y,x] = (255,0,0)
+			self.writablePixels[x,y] = (255,0,0)
 			# print str((x,y))
 			if x != len(self.costs) - 1:
 				top_right = self.costs[x + 1][y - 1]
