@@ -4,7 +4,7 @@ import time
 import pprint
 import sys
 
-
+mini = False
 
 x_sobel_operator = [[-3,0,3],
                     [-10,0,10],
@@ -20,16 +20,10 @@ class Carver(object):
 		self.writablePixels = im.load()
 		self.image = im
 		width,height = im.size
-
-		pixels = list(im.getdata())
-		pixels = [pixels[i * width:(i + 1) * width] for i in xrange(height)]
-		# objPixels = [[None] * len(pixels[0])] * len(pixels)
-		# for i in xrange(len(pixels)):
-		# 	for j in xrange(len(pixels[0])):
-		# 		r,g,b = pixels[i][j]
-		# 		objPixels[i][j] = self.Pixel(r,g,b)
-
-
+		pixels = [[(0,0,0) for _ in xrange(height)] for x in xrange(width)]
+		for x in xrange(width):
+			for y in xrange(height):
+				pixels[x][y] = self.writablePixels[x,y]
 		img_object = self.Image_Object(pixels,self.writablePixels,im)
 		im.save("somepath.png")
 		im.show()
@@ -73,13 +67,14 @@ class Carver(object):
 				self.draw_path(x,len(self.costs[0]) - 1)
 
 		def draw_path(self,x,y):
-			top_right = 999999999999999999999999999999999999
-			top_left =  999999999999999999999999999999999999
-			top =       999999999999999999999999999999999999
+			global mini
+			top_right = 9999999999999999999999999999999999999
+			top_left =  9999999999999999999999999999999999999
+			top =       9999999999999999999999999999999999999
 			if y == 0:
 				return
 			
-			self.writablePixels[y,x] = (255,0,0)
+			self.writablePixels[x,y] = (255,0,0)
 			# print str((x,y))
 			if x != len(self.costs) - 1:
 				top_right = self.costs[x + 1][y - 1]
@@ -88,6 +83,9 @@ class Carver(object):
 			top = self.costs[x][y - 1]
 
 			values = [top,top_right,top_left]
+			if not mini:
+				print max(values)
+				mini = True
 
 			min_index = values.index(min(values))
 			if min_index == 0:
@@ -109,7 +107,7 @@ class Carver(object):
 					# Get the x derivative of p
 					# Get the y derivative of p
 					# Set the sum of the two derivatives as energy of the pixel [i,j] 
-			self.energy = [[self.get_energy(j,i) for j in xrange(len(self.arrPixel[0]))] for i in xrange(len(self.arrPixel))]
+			self.energy = [[self.get_energy(i,j) for j in xrange(len(self.arrPixel[0]))] for i in xrange(len(self.arrPixel))]
 
 		def find_lowest_cost_index(self):
 			bottom_costs = list()
@@ -120,7 +118,7 @@ class Carver(object):
 
 
 		def build_costs(self):
-			self.costs= [[0 for x in xrange(len(self.energy[0]))] for y in xrange(len(self.energy))]
+			self.costs= [[0 for y in xrange(len(self.energy[0]))] for x in xrange(len(self.energy))]
 			self.someCosts = self.costs;
 			# print self.costs 
 			for y in xrange(0,len(self.energy[0]) - 1):
@@ -179,7 +177,7 @@ class Carver(object):
 			if result < 0:
 				result = 0
 
-			# self.writablePixels[x,y] = (result,) * 3
+			self.writablePixels[x,y] = (result,)*3
 			return result
 
 
@@ -188,11 +186,11 @@ class Carver(object):
 			rgbTuple = [0,0,0]
 			for i in xrange(-1,2):
 				for j in xrange(-1,2):
-					height,width= (len(self.arrPixel),len(self.arrPixel[0]))
+					width,height= (len(self.arrPixel),len(self.arrPixel[0]))
 					if x + i < 0 or y + j < 0 or y + j >= height or x + i >= width:
 						return 0
 					filterMultiple = sobel_filter[j+i][i+1]
-					currentPixel = self.arrPixel[y + j][x+ i]	
+					currentPixel = self.arrPixel[x + i][y+ j]	
 					r,g,b = currentPixel
 					filteredSum += self.get_grayscale_pixel(r,g,b)[0] * filterMultiple
 
@@ -200,7 +198,7 @@ class Carver(object):
 
 def main():
 	sys.setrecursionlimit(10000)
-	carver  = Carver("c2.jpg")
+	carver  = Carver("bro.png")
 
 
 
