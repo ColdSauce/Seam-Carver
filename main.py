@@ -188,7 +188,7 @@ class Carver(object):
 				for j in xrange(-1,2):
 					width,height= (len(self.arrPixel),len(self.arrPixel[0]))
 					if x + i < 0 or y + j < 0 or y + j >= height or x + i >= width:
-						return 0
+						continue
 					filterMultiple = sobel_filter[j+i][i+1]
 					currentPixel = self.arrPixel[x + i][y+ j]	
 					r,g,b = currentPixel
@@ -198,7 +198,7 @@ class Carver(object):
 
 def main():
 	sys.setrecursionlimit(10000)
-	carver  = Carver("bro.png")
+	carver  = Carver("waterfall.png")
 
 
 
