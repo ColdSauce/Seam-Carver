@@ -182,19 +182,21 @@ class Carver(object):
 
 
 		def der(self,x,y,sobel_filter):
+			offset = 0
 			filteredSum = 0
 			rgbTuple = [0,0,0]
 			for i in xrange(-1,2):
 				for j in xrange(-1,2):
 					width,height= (len(self.arrPixel),len(self.arrPixel[0]))
 					if x + i < 0 or y + j < 0 or y + j >= height or x + i >= width:
+						offset += 1
 						continue
 					filterMultiple = sobel_filter[j+i][i+1]
 					currentPixel = self.arrPixel[x + i][y+ j]	
 					r,g,b = currentPixel
 					filteredSum += self.get_grayscale_pixel(r,g,b)[0] * filterMultiple
 
-			return filteredSum/9
+			return filteredSum/(9 - offset)
 
 def main():
 	sys.setrecursionlimit(10000)
